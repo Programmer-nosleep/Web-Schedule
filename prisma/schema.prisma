@@ -13,3 +13,35 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String   @unique
+  password String
+  name     String
+  role     Role     @default(USER) // ADMIN atau USER
+  events   Event[]
+}
+
+model Event {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime
+  status      EventStatus @default(PENDING) 
+  employee    User     @relation(fields: [employeeId], references: [id])
+  employeeId  String   @db.ObjectId
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum EventStatus {
+  PENDING     // Belum dibayar
+  PAID        // Sudah dibayar
+  CANCELED    // Dibatalkan
+}

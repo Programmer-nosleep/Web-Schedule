@@ -1,11 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
-const Navbar: React.FC = () => {
+type NavbarProps = {
+  children: React.ReactNode;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ children }: { children: React.ReactNode }) => {
   return (
-    <nav style={{ padding: '10px', backgroundColor: '#f8f8f8', borderBottom: '1px solid #eee' }}>
-      <Link to="/" style={{ marginRight: '15px', textDecoration: 'none', color: '#333' }}>Home</Link>
-      <Link to="/scheduler" style={{ textDecoration: 'none', color: '#333' }}>Scheduler</Link>
+    <nav className="fixed top-0 left-0 w-full z-50 px-8 py-4 flex justify-between items-center">
+      {children}
     </nav>
   )
 }

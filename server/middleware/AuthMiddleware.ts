@@ -3,7 +3,8 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import User from '../models/User'
 
 interface AuthRequest extends Request {
-  user?: any;
+  _id: string
+  user?: string | null
 }
 
 export const Protect = async (

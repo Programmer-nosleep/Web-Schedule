@@ -2,18 +2,13 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
+import GridBox from '@/components/GridBox'
 
 const HomePage: React.FC = () => {
   return (
-    <div className="relative w-full min-h-screen bg-white">
+    <div className="relative w-full min-h-screen bg-gray-100/50">
       {/* Background kotak */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <div className="grid grid-cols-8 grid-rows-5 gap-0 w-full max-w-[768px] aspect-[8/5]">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="border border-gray-100/50" />
-          ))}
-        </div>
-      </div>
+      <GridBox /> 
 
       {/* Navbar */}
       <Navbar>

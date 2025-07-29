@@ -1,132 +1,134 @@
-import React from 'react';
-import { events, resources } from '../utils/data';
-import { Scheduler as ReactScheduler } from '@aldabil/react-scheduler';
-// import '@aldabil/react-scheduler/dist/index.css';
+import React, { useState, useRef } from "react"
+import type { ChangeEvent } from "react"
+import { Input } from "./ui/input"
+import Navbar from "./Navbar"
 
-// Interface untuk Event Anda, sesuai dengan properti yang dibutuhkan oleh @aldabil/react-scheduler
-interface Event {
-  event_id: number | string; // @aldabil/react-scheduler expects 'event_id'
-  title: string;
-  start: Date;
-  end: Date;
-  resourceId?: string; // Optional: untuk mengaitkan event dengan resource
-  // Tambahkan properti lain yang mungkin Anda miliki di event Anda
-}
+const Scheduler: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
-// Interface untuk Resource Anda, sesuai dengan properti yang dibutuhkan oleh @aldabil/react-scheduler
-interface Resource {
-  assigner: string; // Ini akan menjadi 'id' yang digunakan di event.resourceId
-  text: string;
-  color: string;
-}
-
-const SchedulerComponent: React.FC = () => {
-  // Map data events Anda agar sesuai dengan format yang dibutuhkan oleh @aldabil/react-scheduler
-  // Pastikan 'id' di data.ts diubah menjadi 'event_id'
-  const mappedEvents: Event[] = events.map(event => ({
-    event_id: event.id,
-    title: event.title,
-    start: event.start,
-    end: event.end,
-    // Jika Anda ingin mengaitkan event dengan resource, tambahkan resourceId di sini.
-    // Contoh: resourceId: 'myEvents', (jika semua event default adalah 'My Events')
-    // Anda perlu logika untuk menentukan resourceId dari event Anda jika ada.
-  }));
-
-  // Map resources Anda agar sesuai dengan format yang dibutuhkan oleh @aldabil/react-scheduler
-  // properti 'id' dari resource Anda dipetakan ke 'assigner'
-  const mappedResources: Resource[] = resources.map(res => ({
-    assigner: res.id,
-    text: res.name,
-    color: res.color,
-  }));
-
-  // State untuk event di scheduler, penting untuk interaksi (add, update, delete)
-  const [schedulerEvents, setSchedulerEvents] = React.useState<Event[]>(mappedEvents);
-
-  // Fungsi untuk menangani operasi pembuatan/pengeditan event
-  const handleConfirm = async (event: Event, action: 'create' | 'edit'): Promise<Event> => {
-    if (action === "create") {
-      console.log('Event added:', event);
-      // Generate ID unik untuk event baru jika Anda tidak memiliki backend
-      const newEvent = { ...event, event_id: Math.random() };
-      setSchedulerEvents(prevEvents => [...prevEvents, newEvent]);
-      return newEvent;
-    } else if (action === "edit") {
-      console.log('Event updated:', event);
-      setSchedulerEvents(prevEvents =>
-        prevEvents.map(e => (e.event_id === event.event_id ? event : e))
-      );
-      return event;
-    }
-    return event; // Fallback
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('id-ID', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+    });
   };
 
-  // Fungsi untuk menangani operasi penghapusan event
-  const handleDelete = async (event_id: string | number): Promise<string | number> => {
-    console.log('Event deleted:', event_id);
-    setSchedulerEvents(prevEvents => prevEvents.filter(e => e.event_id !== event_id));
-    return event_id;
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const raw = e.target.value;
+    console.log("Selected date value:", raw);
+    const newDate = new Date(raw);
+
+    if (!isNaN(newDate.getTime())) {
+      setSelectedDate(newDate);
+    } else {
+      console.warn("Invalid date:", raw);
+    }
+  };
+
+
+  const openDatePicker = (): void => {
+    dateInputRef.current?.click();
   };
 
   return (
-    <div className="scheduler-page" style={{ margin: '20px', padding: '20px', border: '1px solid #eee', borderRadius: '8px', height: '80vh' }}>
-      <h2>My Calendar Scheduler</h2>
-      <p>
-        Ini adalah tampilan scheduler menggunakan `@aldabil/react-scheduler` dengan data dari `../util/data.ts`.
-      </p>
-
-      <ReactScheduler
-        view="week" // Default view
-        events={schedulerEvents}
-        resources={mappedResources}
-        resourceFields={{
-          idField: "assigner", // Field di event yang merujuk ke resource (misal: event.resourceId = 'myEvents')
-          textField: "text",
-          colorField: "color",
-        }}
-
-        // Penanganan CRUD event
-        onConfirm={handleConfirm}
-        onDelete={handleDelete}
-
-        // --- KONFIGURASI VIEW DITEMPATKAN DI SINI ---
-        week={{
-          weekDays: [0, 1, 2, 3, 4, 5, 6], // Minggu, Senin, ... Sabtu
-          weekStartOn: 0, // Minggu sebagai hari pertama (0)
-          startHour: 8, // Jam mulai tampilan hari/minggu (8 AM)
-          endHour: 18,  // Jam akhir tampilan hari/minggu (6 PM)
-          step: 30,     // Interval waktu dalam menit (misal: 30 menit)
-          // hourFormat: "24" // Format jam "24" atau "12"
-        }}
-        day={{
-          startHour: 8,
-          endHour: 18,
-          step: 30,
-          // hourFormat: "24"
-        }}
-        // month={{
-        //   weekDays: [0, 1, 2, 3, 4, 5, 6],
-        //   weekStartOn: 0
-        // }}
-        // ---------------------------------------------
-
-        // Aktifkan atau nonaktifkan mode baca saja
-        // readOnly={false}
-      />
-
-      <div style={{ marginTop: '20px', textAlign: 'left', fontSize: '0.9em' }}>
-        <h3>Loaded Events (from data.ts):</h3>
-        <ul>
-          {schedulerEvents.map(event => (
-            <li key={event.event_id}>
-              {event.title} ({event.start.toLocaleDateString()} {event.start.toLocaleTimeString()} - {event.end.toLocaleTimeString()})
-            </li>
-          ))}
-        </ul>
+    <div className='w-full min-h-screen'>
+      <Navbar className='top-0 left-0 w-full z-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center'>
+        <div>          
+          <img
+            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+            alt="Logo"
+            className="h-10"
+          />
+          </div>
+      </Navbar>
+      <div className='flex justify-between items-center px-8 py-3 border-b border-gray-200'>
+        <div className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+          <button
+            className="cursor-pointer px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-100"
+            onClick={() => setSelectedDate(new Date())}
+          >
+            Hari Ini
+          </button>
+     
+          <button className="cursor-pointer px-2 py-1.5 border border-gray-300 rounded-md hover:bg-gray-100">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M15 19l-7-7 7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+     
+          <button
+            className="cursor-pointer flex items-center px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-100 space-x-2"
+            onClick={openDatePicker}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>{selectedDate ? formatDate(selectedDate) : 'Pilih tanggal'}</span>
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 9l-7 7-7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+     
+          <input
+            ref={dateInputRef}
+            type="date"
+            className="hidden block"
+            onChange={handleDateChange}
+            value={selectedDate.toISOString().split('T')[0]}
+          />
+     
+          <button className="cursor-pointer px-2 py-1.5 border border-gray-300 rounded-md hover:bg-gray-100">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 5l7 7-7 7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+     
+          <button className="p-1.5 border border-gray-300 rounded-md hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M4 6h16M4 12h8m-8 6h16" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+     
+          {/* Share */}
+          <button className="p-1.5 border border-gray-300 rounded-md hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M15 8a3 3 0 00-3-3H6a3 3 0 000 6h6a3 3 0 003-3zM9 16a3 3 0 00-3-3H3a3 3 0 000 6h3a3 3 0 003-3zm12-6h-6a3 3 0 000 6h6a3 3 0 000-6z"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className=''>
+          <Input
+            id='username'
+            type='text'
+            placeholder='Search'
+            // value={username}
+            // onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+      </div>
+      <div className='flex justify-around items-center py-6 border-b border-gray-200'>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div className=''>
+            <div className='rounded-full border-2 border-gray-200/50'></div>
+            {/* <span>{ profileName }</span> */}
+          </div>
+        ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SchedulerComponent;
+export default Scheduler

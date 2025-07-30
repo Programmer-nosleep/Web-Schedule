@@ -27,20 +27,33 @@ const Scheduler: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> df196b9528281ba056cbc142577551721be51826
   const openDatePicker = (): void => {
     dateInputRef.current?.click();
   };
 
   return (
+<<<<<<< HEAD
     <div className='w-full min-h-screen flex flex-col'>
       <Navbar className='top-0 left-0 w-full z-50 px-8 py-3 border-b border-gray-200 flex justify-between items-center'>
+=======
+    <div className='w-full min-h-screen'>
+      <Navbar className='top-0 left-0 w-full z-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center'>
+>>>>>>> df196b9528281ba056cbc142577551721be51826
         <div>          
           <img
             src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
             alt="Logo"
             className="h-10"
           />
+<<<<<<< HEAD
         </div>
+=======
+          </div>
+>>>>>>> df196b9528281ba056cbc142577551721be51826
       </Navbar>
       <div className='flex justify-between items-center px-8 py-3 border-b border-gray-200'>
         <div className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
@@ -126,6 +139,7 @@ const Scheduler: React.FC = () => {
           </div>
         ))}
       </div>
+<<<<<<< HEAD
 
       {/* Posisi paling bawah? */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50">
@@ -172,6 +186,8 @@ const Scheduler: React.FC = () => {
           </button>
         </div>
       </div>
+=======
+>>>>>>> df196b9528281ba056cbc142577551721be51826
     </div>
   )
 }

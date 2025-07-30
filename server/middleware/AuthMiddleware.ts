@@ -4,9 +4,19 @@ import { generateToken } from "../utils/token";
 
 import User from '../models/User'
 
+interface AuthUser {
+  _id: string
+  name: string
+  email: string
+  role: string
+  profile: string
+  createAt: Date
+  updatedAt: Date
+}
+
 interface AuthRequest extends Request {
   _id: string
-  user?: string
+  user?: AuthUser
 }
 
 export const Protect = async (
@@ -62,7 +72,7 @@ export const Protect = async (
   }
 }
 
-export const adminOnly = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
+export const adminOnly = async (req: AuthRequest, res: Response, next: NextFunction) : Promise<void> => {
     if (req.user && req.user.role === 'admin')
       next()
 

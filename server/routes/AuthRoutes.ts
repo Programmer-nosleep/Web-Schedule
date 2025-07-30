@@ -1,7 +1,7 @@
 import type { Router, RequestHandler } from "express";
 // import type { LoginUser, RegisterUser, updateUserProfile, getUserProfile } from "../controllers/AuthController";
 import { Protect } from "../middleware/AuthMiddleware";
-import { Upload } from "../middleware/UploadMiddleware";
+// import { Upload } from "../middleware/UploadMiddleware";
 
 const router = Router();
 

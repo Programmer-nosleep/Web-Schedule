@@ -95,3 +95,20 @@ export const RegisterUser = async (req: Request, res: Response): Promise<void> =
     }
   }
 }
+
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+   const user = await User.findById(req.user.id)
+
+   if (!user) {
+    res.status(404).json({ message: 'user not found' })
+   }
+
+   user.name = req.body.name || user?.name
+
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Server error, ', error: error.message })
+    }
+  }
+}
